@@ -5,18 +5,73 @@ window.addEventListener("load", start);
 // ******** CONTROLLER ********
 
 function start() {
-  console.log(`Javascript kører`);
 
-  // start ticking
+  document.addEventListener("keydown", keyPress)
+  document.addEventListener("keyup", logKey)
   tick();
 }
 
 function tick() {
-  // setup next tick
-  setTimeout(tick, 500);
+  setTimeout(tick, 550);
 
-  // TODO: Do stuff
+  for (const part of queue) {
+    writeToCell(part.row, part.col, 0);
+  }
+  /*   console.log(controls)
+  console.log(direction) */
+  
+  const head = {
+    row: queue[queue.length - 1].row,
+    col: queue[queue.length - 1].col,
+  }
 
+  if (controls.left) {
+    direction = "left"
+  }
+  else if (controls.right) {
+    direction = "right";
+  }
+  else if (controls.up) {
+    direction = "up";
+  }
+  else if (controls.down) {
+    direction = "down";
+  }
+
+
+  switch (direction) {
+    case "left":
+      head.col--;
+      if (head.col < 0) {
+        head.col = 9;
+      }
+      break;
+    case "right":
+      head.col++;
+      if (head.col > 9) {
+        head.col = 0;
+      }
+      break;
+    case "up":
+      head.row--;
+      if (head.row < 0) {
+        head.row = 9;
+      }
+      break;
+    case "down":
+      head.row++;
+      if (head.row > 9) {
+        head.row = 0;
+      }
+      break;
+  }
+
+
+  queue.push(head);
+  queue.shift();
+  for (const part of queue) {
+    writeToCell(part.row, part.col, 1);
+  }
   // display the model in full
   displayBoard();
 }
@@ -35,12 +90,78 @@ const model = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
+let direction = "left";
+
+const controls = {
+  left: false,
+  up: false,
+  down: false,
+  right: false,
+}
+
+const queue = [
+  {
+    row: 5,
+    col: 5,
+  },
+  {
+    row: 5,
+    col: 6,
+  },
+  {
+    row: 5,
+    col: 7,
+  },
+];
+
 function writeToCell(row, col, value) {
   model[row][col] = value;
 }
 
 function readFromCell(row, col) {
   return model[row][col];
+}
+
+function keyPress(event) {
+  switch (event.key) {
+    case "a":
+    case "ArrowLeft":
+      controls.left = true;
+      break;
+    case "d":
+    case "ArrowRight":
+      controls.right = true;
+      break;
+    case "w":
+    case "ArrowUp":
+      controls.up = true;
+      break;
+    case "s":
+    case "ArrowDown":
+      controls.down = true;
+      break;
+  }
+}
+
+function logKey(event) {
+  switch (event.key) {
+    case "a":
+    case "ArrowLeft":
+      controls.left = false;
+      break;
+    case "d":
+    case "ArrowRight":
+      controls.right = false;
+      break;
+    case "w":
+    case "ArrowUp":
+      controls.up = false;
+      break;
+    case "s":
+    case "ArrowDown":
+      controls.down = false;
+      break;
+  }
 }
 
 // ******** VIEW ********
